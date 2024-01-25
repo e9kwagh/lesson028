@@ -1,0 +1,235 @@
+
+ 
+
+
+ 
+
+       
+{% extends 'student_work/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-4">
+
+    {% include 'student_work/message.html' %}
+    <h4 class="text-center my-5">Math</h4>
+
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Link of Assignments</th>
+                    <th>Deadline</th>
+                    <th>Arrival Date</th>
+                    <th>Submit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in math_data %}
+                    <tr>
+                        <td>{{ assignment.title }}</td>
+                        <td>{{ assignment.link }}</td>
+                        <td>{{ assignment.deadline|date:"h:i A, F d, Y" }}</td>
+                        <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
+                        <td>
+                            {% if not assignment.is_submitted %}
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{% url 'submit_math_assignment' assignment_id=assignment.math_id  %}" method="post">
+                                                    {% csrf_token %}
+                                                    {{ math_sub_Form }}
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Submit
+                                </button>
+                            {% else %}
+                              
+                                <p>Assignment already submitted</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+
+
+      <h4 class="text-center my-5">Lesson</h4>
+      <div class="table-responsive">
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Title</th>
+                      <th>Link of Assignments</th>
+                      <th>Deadline</th>
+                      <th>Arrival Date</th>
+                      <th>Submit</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for assignment in lesson_data %}
+                      <tr>
+                          <td>{{ assignment.title }}</td>
+                          <td>{{ assignment.link }}</td>
+                          <td>  
+                            {{ assignment.deadline|date:"h:i A, F d, Y" }}</td>
+                          <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
+                          <td>
+                            <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                   
+                                     <div class="modal-body">
+                                      <form action="{% url 'submit_lesson_assignment' assignment_id=assignment.lesson_id  %}" method="post">
+                                          {% csrf_token %}
+                                          {{ lesson_sub_Form }}
+                                          <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                              <button type="submit" class="btn btn-success">Submit</button>
+                                          </div>
+                                      </form>
+                               
+
+                                  </div>
+                                 
+                                </div>
+                              </div>
+                            </div>
+                          
+                           
+                              <button  class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                                 Submit
+                              </button>
+                          </td>
+                         
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+  
+{% endblock content %}
+
+
+    <!-- <h4 class="text-center  my-5 ">Lesson</h4>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Link of Assignments</th>
+                    <th>Deadline</th>
+                    <th>Arrival Date</th>
+               
+                    <th>Submit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in lesson_data %}
+                    <tr>
+                        <td>{{ assignment.title }}</td>
+                        <td>{{ assignment.link }}</td>
+                        <td>{{ assignment.deadline|date:"h:i A, F d, Y" }}</td>
+                        <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
+                      
+                        <td>
+                            <button class="btn btn-success" data-toggle="modal" data-target="#lessonSubmissionModal{{ forloop.counter }}">
+                                Submit
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+    <div class="table-responsive">
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Title</th>
+                      <th>Link of Assignments</th>
+                      <th>Deadline</th>
+                      <th>Arrival Date</th>
+                      <th>Submit</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for assignment in math_data %}
+                      <tr>
+                          <td>{{ assignment.title }}</td>
+                          <td>{{ assignment.link }}</td>
+                          <td>  
+                            {{ assignment.deadline|date:"h:i A, F d, Y" }}</td>
+                          <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
+                          <td>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                   
+                                    
+                                     <div class="modal-body">
+                                      <form action="{% url 'submit_math_assignment' assignment_id=assignment.math_id  %}" method="post">
+                                          {% csrf_token %}
+                                          {{ math_sub_Form }}
+                                          <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                              <button type="submit" class="btn btn-primary">Submit</button>
+                                          </div>
+                                      </form>
+                               
+
+                                  </div>
+                                 
+                                </div>
+                              </div>
+                            </div>
+                     
+                              <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                              Submit
+                              </button>
+                          </td>
+                         
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>

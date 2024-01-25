@@ -1,0 +1,131 @@
+
+    {% extends 'student_work/base.html' %}
+
+    {% block content %}
+    <div class="container mt-5 mb-4">
+        {% include 'student_work/message.html' %}
+        <h2 class="text-center my-4">Math Assignments</h2>
+        <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>id</th>
+            <th>User</th>
+            <th>Name</th>
+            <th>Last Name </th>
+
+            <th>Assignment Title</th>
+            <th>Math Submission Link</th>
+            <th>Math Submission Date</th>
+            <th>update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in math_submissions %}
+            <tr> 
+                <td>{{submission.id}}</td>
+                <td>{{ submission.student.username }}</td>
+                <td>{{ submission.student.first_name }}</td>
+                <td>{{ submission.student.last_name }}</td>
+                <td>{{ submission.assigmnets.title }}</td>
+                <td>{{ submission.math_sub_link }}</td>
+                <td>{{ submission.math_sub_date }}</td>
+                <td>
+                    <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        
+                            <div class="modal-body">
+                            <form action="{% url 'update_math' assignment_id=submission.id    %}" method="post">
+                                {% csrf_token %}
+                                {{ math_update_Form }} 
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">update</button>
+                                </div>
+                            </form>
+          
+                        
+                        </div>
+                        
+                        </div>
+                    </div>
+                    </div>
+                
+                
+                    <button  class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                        update
+                    </button>
+                </td>
+            
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+
+        <h2 class="text-center my-4">Lesson Assignments</h2>
+        <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>id</th>
+            <th>User</th>
+            <th>Name</th>
+            <th>Last Name </th>
+            <th>Assignment Title</th>
+            <th>Lesson Submission Link</th>
+            <th>Lesson Submission Date</th>
+            <th>update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in lesson_submissions %}
+            <tr>
+                <td>{{submission.id}}</td>
+                <td>{{ submission.student.username }}</td>
+                <td>{{ submission.student.first_name }}</td>
+                <td>{{ submission.student.last_name }}</td>
+                <td>{{ submission.assigmnets.title }}</td>
+                <td>{{ submission.lesson_sub_link }}</td>
+                <td>{{ submission.lesson_sub_date }}</td>
+                <td>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        
+                            <div class="modal-body">
+                            <form action="{% url 'update_lesson' assignment_id=submission.id  %}" method="post">
+                                {% csrf_token %}
+                                {{ lesson_update_Form }}
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">update</button>
+                                </div>
+                            </form>
+                    
+                            
+                        </div>
+                        
+                        </div>
+                    </div>
+                    </div>
+                
+                
+                    <button  class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        update
+                    </button>
+                </td>
+            
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    {% endblock %}
