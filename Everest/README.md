@@ -1,10 +1,5 @@
-# About the project
 
-**This is an attendence management system. It has two login options, one for manager who will manage the attendence of all the employees and another one is for the employees where they can see their attendance status individually.**
 
-**The manager can add an employee, mark the attendance for a particular date, see the attendance status of each employee and can also update it.**
-
-**The employee can only see his attendance status and can keep track of it.**
 
 
 # STEPS TO RUN THE APPLICATION
@@ -68,8 +63,6 @@ pip install -r requirements.txt
 
 
 
-
-# Login as Employee (This option is for different employees to log in to their profile to view their attendance status)
 
 
 
