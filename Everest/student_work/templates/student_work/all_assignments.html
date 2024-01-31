@@ -14,7 +14,7 @@
                     <th>Title</th>
                     <th class="col-6 col-sm-4">Link of Assignments</th>
                     <th>Deadline</th>
-                    <th>Arrival Date</th>
+                    <th>Arrived on </th>
                     <th>Submit</th>
                 </tr>
             </thead>
@@ -52,8 +52,8 @@
                         <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
                         <td>
                             {% if not assignment.is_submitted %}
-                                <div class="modal fade" id="exampleModalMath_{{ assignment.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                            <div class="modal fade" id="exampleModalMath_{{ assignment.id }}" tabindex="-1" aria-labelledby="exampleModalLabelMath_{{ assignment.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
@@ -90,16 +90,19 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                  
+
                     <th>Title</th>
                     <th>Link of Assignments</th>
                     <th>Deadline</th>
-                    <th>Arrival Date</th>
+                    <th>Arrived on</th>
                     <th>Submit</th>
                 </tr>
             </thead>
             <tbody>
                 {% for assignment in lesson_data %}
                     <tr>
+                 
                         <td>{{ assignment.title }}</td>
                         <td>
                             <a
@@ -128,7 +131,7 @@
                         <td>{{ assignment.deadline|date:"h:i A, F d, Y" }}</td>
                         <td>{{ assignment.send_time|date:"h:i A, F d, Y" }}</td>
                         <td>
-                            <div class="modal fade" id="exampleModalLesson_{{ assignment.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="exampleModalLesson_{{ assignment.id }}" tabindex="-1" aria-labelledby="exampleModalLabelLesson_{{ assignment.id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -160,26 +163,49 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl);
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    var submitButtons = document.querySelectorAll('.btn btn-primary');
 
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+    console.log('Number of buttons found:', submitButtons.length);
 
-    
-        var clipboard = new ClipboardJS('.copy-btn');
+    for (var i = 0; i < submitButtons.length; i++) {
+        var button = submitButtons[i];
+        console.log('Button:', button);
 
-    
-        clipboard.on('success', function (e) {
-            var tooltip = new bootstrap.Tooltip(e.trigger);
-            tooltip.show();
-        });
+        if (button) {
+            button.addEventListener('click', function() {
+                var lessonSubForm = button.dataset.lessonSubForm;
+
+                console.log('Lesson Sub Form:', lessonSubForm);
+
+                if (lessonSubForm.trim() !== '') {
+                    button.textContent = 'Submitted';
+                    button.disabled = true;
+                }
+            });
+        }
+    }
+});
+
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
     });
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    var clipboard = new ClipboardJS('.copy-btn');
+
+    clipboard.on('success', function (e) {
+        var tooltip = new bootstrap.Tooltip(e.trigger);
+        tooltip.show();
+    });
+
+
 </script>
 
 {% endblock %}

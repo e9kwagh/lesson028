@@ -16,8 +16,9 @@ from .forms import (
 from .models import Assignments, Submission
 from django.db.models import Q
 from django.utils import timezone
+
 from django.db import connection
-import datetime
+
 import pytz
 from datetime import timedelta
 from django.db.models import Sum
@@ -33,107 +34,120 @@ def current_time():
     print(now)
 
 
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render
-from django.utils import timezone
-from .forms import Math_sub_Form, Lesson_sub_Form
-from .models import Assignments
+def time_stamp():
+    timezone.activate('Asia/Kolkata')
+    current_time = timezone.localtime(timezone.now())
+    formatted_current = current_time.strftime('%Y-%m-%dT%H:%M')
+    formatted_current_time = timezone.datetime.strptime( formatted_current, '%Y-%m-%dT%H:%M')
+    now = formatted_current_time
+    return now
 
 
 def all_assignments(request):
-    timezone.activate("Asia/Kolkata")
-    current_time = timezone.localtime(timezone.now())
-    formatted_current = current_time.strftime("%Y-%m-%dT%H:%M")
-    formatted_current_time = timezone.datetime.strptime(
-        formatted_current, "%Y-%m-%dT%H:%M"
-    )
-    now = formatted_current_time
+   
+    # current_time_local = timezone.localtime(timezone.now())
+    # now = current_time_local.strftime('%Y-%m-%dT%H:%M')
+    # print("now  : ", now)
+    # timezone.activate('Asia/Kolkata')
+    # current_time = timezone.localtime(timezone.now())
+    # formatted_current = current_time.strftime('%Y-%m-%dT%H:%M')
+    # formatted_current_time = timezone.datetime.strptime( formatted_current, '%Y-%m-%dT%H:%M')
+    # current_time_local = timezone.localtime(timezone.now(), timezone='Asia/Kolkata')
+    # formatted_current_time_local = current_time_local.strftime('%Y-%m-%dT%H:%M:%S')
+    
+    now = time_stamp()
+    now_utc = now.astimezone(pytz.utc)
+   
 
-    math_assignments = Assignments.objects.filter(math_send_time__lt=now).order_by(
-        "-math_send_time"
-    )
-    lesson_assignments = Assignments.objects.filter(lesson_send_time__lt=now).order_by(
-        "-lesson_send_time"
-    )
+    print("now", now) 
+    print("now_utc",now_utc)
+   
+
+    math_assignments = Assignments.objects.filter(math_send_time__lt=now_utc).order_by('-math_send_time')
+    lesson_assignments = Assignments.objects.filter(lesson_send_time__lt=now_utc).order_by('-lesson_send_time')
     assignments = math_assignments | lesson_assignments
 
-
     math_data = [
-        {
-            "math_id": assignment.id,
-            "title": assignment.title,
-            "link": assignment.math_question_link,
-            "deadline": assignment.math_deadline,
-            "send_time": timezone.localtime(assignment.math_send_time),
+        {   "math_id" : assignment.id,
+            'title': assignment.title,
+            'link': assignment.math_question_link,
+            'deadline': timezone.localtime(assignment.math_deadline),
+            'send_time': timezone.localtime(assignment.math_send_time),
+            'assignment_type': 'math',
+            
+            
         }
-        for assignment in assignments
+        for assignment in math_assignments
     ]
 
     lesson_data = [
-        {
-            "lesson_id": assignment.id,
-            "title": assignment.title,
-            "link": assignment.lesson_question_link,
-            "deadline": assignment.lesson_deadline,
-            "send_time": timezone.localtime(assignment.lesson_send_time),
-            "assignment_type": "lesson",
+        
+        {   "lesson_id" : assignment.id ,
+            'title': assignment.title,
+            'link': assignment.lesson_question_link,
+            'deadline': timezone.localtime(assignment.lesson_deadline),
+            'send_time': timezone.localtime(assignment.lesson_send_time),
+            'assignment_type': 'lesson',
         }
-        for assignment in assignments
+        for assignment in lesson_assignments
     ]
-
     math_sub_Form = Math_sub_Form()
     lesson_sub_Form = Lesson_sub_Form()
 
     context = {
-       
-        "current_time": now,
-        "math_data": math_data,
-        "lesson_data": lesson_data,
-        "math_sub_Form": math_sub_Form,
-        "lesson_sub_Form": lesson_sub_Form,
+        'assignments': assignments,
+        'current_time': now,
+        'math_data': math_data,
+        'lesson_data': lesson_data,
+
+        "math_sub_Form" : math_sub_Form,
+       "lesson_sub_Form" : lesson_sub_Form,
+
+
     }
 
-    return render(request, "student_work/all_assignments.html", context)
+    # print("Assignments:", assignments)
+    print("Math Data:", math_data)
+    # print("Lesson Data:", lesson_data)
+    # print("Current Time:", current_time)
+
+    return render(request, 'student_work/all_assignments.html', context)
+
+
+
 
 
 @login_required(login_url="studentlogin")
 def submit_math_assignment(request, assignment_id):
     if request.method == "POST":
-        assignment = Assignments.objects.get(pk=assignment_id)
+        assignment = get_object_or_404(Assignments, id=assignment_id)
         form = Math_sub_Form(request.POST)
-        current_time = timezone.now()
-        current_time = current_time.astimezone(timezone.get_current_timezone())
+        # current_time = timezone.now()
+        # current_time = current_time.astimezone(timezone.get_current_timezone())
 
         # current_time_local = timezone.localtime(timezone.now())
         # now = current_time_local.strftime('%Y-%m-%dT%H:%M')
         # print(now)
 
-        right_format = assignment.math_deadline
-        format_used = right_format.strftime("%Y-%m-%dT%H:%M:%S%z")
-        formatted_current_time = current_time.strftime(format_used)
+        # right_format = assignment.math_deadline
+        # format_used = right_format.strftime("%Y-%m-%dT%H:%M:%S%z")
+        # formatted_current_time = current_time.strftime(format_used)
+        now = time_stamp()
+        now_utc = now.astimezone(pytz.utc)
 
         if form.is_valid():
             submission_link = form.cleaned_data["math_submission_link"]
 
-            submission, created = Submission.objects.get_or_create(
-                student=request.user, assigmnets=assignment
+            submission, created= Submission.objects.get_or_create( assigmnets=assignment,student=request.user
             )
+            
             submission.math_sub_link = submission_link
-            submission.math_sub_date = formatted_current_time
-
-            deadline_datetime = datetime.datetime.strptime(
-                submission.math_sub_date, "%Y-%m-%dT%H:%M:%S%z"
-            )
-
-            if deadline_datetime <= assignment.math_deadline:
-                print(assignment.math_deadline)
-                print("deadline_datetime : ", deadline_datetime)
-                submission.missed_deadline_count += 1
-
-            else:
+            submission.math_sub_date = now_utc
+      
+            if submission.math_sub_date <= assignment.math_deadline:                             
                 submission.on_time_submission_count += 1
-
-                print(assignment.math_deadline)
+            else:
+                submission.missed_deadline_count += 1
 
             submission.save()
             messages.success(request, "Math Assignment submitted successfully.")
@@ -147,14 +161,10 @@ def submit_math_assignment(request, assignment_id):
 @login_required(login_url="studentlogin")
 def submit_lesson_assignment(request, assignment_id):
     if request.method == "POST":
-        assignment = Assignments.objects.get(pk=assignment_id)
+        assignment = get_object_or_404(Assignments, id=assignment_id)
         form = Lesson_sub_Form(request.POST)
-        current_time = timezone.now()
-        current_time = current_time.astimezone(timezone.get_current_timezone())
-
-        right_format = assignment.lesson_deadline
-        format_used = right_format.strftime("%Y-%m-%dT%H:%M:%S%z")
-        formatted_current_time = current_time.strftime(format_used)
+        now = time_stamp()
+        now_utc = now.astimezone(pytz.utc)
 
         if form.is_valid():
             submission_link = form.cleaned_data["lesson_submission_link"]
@@ -163,19 +173,13 @@ def submit_lesson_assignment(request, assignment_id):
                 student=request.user, assigmnets=assignment
             )
             submission.lesson_sub_link = submission_link
-            submission.lesson_sub_date = formatted_current_time
+            submission.lesson_sub_date = now_utc
 
-            deadline_datetime = datetime.datetime.strptime(
-                submission.lesson_sub_date, "%Y-%m-%dT%H:%M:%S%z"
-            )
 
-            if deadline_datetime <= assignment.lesson_deadline_deadline:
-                print(assignment.math_deadline)
-                print("deadline_datetime : ", deadline_datetime)
-                submission.missed_deadline_count += 1
-
-            else:
+            if  submission.lesson_sub_date <= assignment.lesson_deadline:         
                 submission.on_time_submission_count += 1
+            else:
+                submission.missed_deadline_count += 1
 
                 print("assignment.lesson_deadline", assignment.lesson_deadline)
 
@@ -190,6 +194,9 @@ def submit_lesson_assignment(request, assignment_id):
 
 def is_superuser(user):
     return user.is_superuser
+
+
+
 
 
 @user_passes_test(is_superuser, login_url="adminlogin")
@@ -278,6 +285,13 @@ def schedule_assignment(request):
         print("post")
         if form.is_valid():
             scheduled_date = form.cleaned_data["math_send_time"].date()
+            # ist = pytz.timezone('Asia/Kolkata')
+            # math_send_time = form.cleaned_data["math_send_time"].replace(tzinfo=timezone.utc).astimezone(ist)
+            # math_deadline = form.cleaned_data["math_deadline"].replace(tzinfo=timezone.utc).astimezone(ist)
+
+            # lesson_send_time = form.cleaned_data["lesson_send_time"].replace(tzinfo=timezone.utc).astimezone(ist)
+            # lesson_deadline = form.cleaned_data["lesson_deadline"].replace(tzinfo=timezone.utc).astimezone(ist)
+
             # existing_assignment = Assignments.objects.filter(math_send_time__date=scheduled_date).first()
 
             # if existing_assignment:
@@ -293,6 +307,9 @@ def schedule_assignment(request):
     else:
         form = AssignmentForm()
     return render(request, "student_work/schedule_assignment.html", {"form": form})
+
+
+
 
 
 def student_login(request):
@@ -357,7 +374,7 @@ def signupPage(request):
             print("in_valid")
             user = form.save()
             messages.success(request, "Acount created succesfully ")
-            return redirect("dashboard")
+            return redirect("signupPage")
         else:
             messages.error(request, "try again with another user name and password ")
             print(form.errors)
