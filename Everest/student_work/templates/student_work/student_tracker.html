@@ -15,7 +15,7 @@
                     <th>Assignment Title</th>
                     <th>Math Submission Link</th>
                     <th>Math Submission Date</th>
-                    <th>update</th>
+                    <th>Update</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,7 +26,30 @@
                     <td>{{ submission.student.first_name }}</td>
                     <td>{{ submission.student.last_name }}</td>
                     <td>{{ submission.assigmnets.title }}</td>
-                    <td>{{ submission.math_sub_link }}</td>
+                    <td>
+                        <a
+                            href="{{ submission.math_sub_link }}"
+                            data-bs-toggle="popover"
+                            data-bs-content="{{ submission.math_sub_link }}"
+                            data-bs-trigger="hover"
+                            data-bs-placement="top"
+                            role="button"
+                            class="text-decoration-none text-dark"
+                            target="_blank"
+                            style="transition: color 0.3s;"
+                        >
+                            {{ submission.math_sub_link|truncatechars:20 }}
+                            <button
+                                class="btn btn-sm btn-secondary"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Open in New Tab"
+                                style="pointer-events: none;"
+                            >
+                                Open
+                            </button>
+                        </a>
+                    </td>
                     <td>{{ submission.math_sub_date }}</td>
                     <td>
                         <div class="modal fade" id="exampleModalMath_{{ submission.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -71,7 +94,7 @@
                     <th>Assignment Title</th>
                     <th>Lesson Submission Link</th>
                     <th>Lesson Submission Date</th>
-                    <th>update</th>
+                    <th>Update</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +105,30 @@
                     <td>{{ submission.student.first_name }}</td>
                     <td>{{ submission.student.last_name }}</td>
                     <td>{{ submission.assigmnets.title }}</td>
-                    <td>{{ submission.lesson_sub_link }}</td>
+                    <td>
+                        <a
+                            href="{{ submission.lesson_sub_link }}"
+                            data-bs-toggle="popover"
+                            data-bs-content="{{ submission.lesson_sub_link }}"
+                            data-bs-trigger="hover"
+                            data-bs-placement="top"
+                            role="button"
+                            class="text-decoration-none text-dark"
+                            target="_blank"
+                            style="transition: color 0.3s;"
+                        >
+                            {{ submission.lesson_sub_link|truncatechars:20 }}
+                            <button
+                                class="btn btn-sm btn-secondary"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Open in New Tab"
+                                style="pointer-events: none;"
+                            >
+                                Open
+                            </button>
+                        </a>
+                    </td>
                     <td>{{ submission.lesson_sub_date }}</td>
                     <td>
                         <div class="modal fade" id="exampleModalLesson_{{ submission.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -98,7 +144,7 @@
                                             {{ lesson_update_Form }}
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                <button type="submit" class="btn btn-success">Update</button>
                                             </div>
                                         </form>
                                     </div>
@@ -115,4 +161,29 @@
         </table>
     </div>
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    var clipboard = new ClipboardJS('.copy-btn');
+
+    clipboard.on('success', function (e) {
+        var tooltip = new bootstrap.Tooltip(e.trigger);
+        tooltip.show();
+    });
+});
+</script>
+
+</script>
 {% endblock %}

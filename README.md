@@ -1,12 +1,10 @@
 
 
-
-
 # STEPS TO RUN THE APPLICATION
 
 # Clone the repository
 
-    git clone https://github.com/e9kwagh/lesson028.git
+    git clone https://github.com/e9kwagh/Everest.git
 
 # Create a virtual environment
 
@@ -16,42 +14,23 @@
     source venv/bin/activate
 
 **For Windows**
-```
- pip install virtualenv
-```
-   
-    ```
-     python -m venv venv
-    ```
- 
-    ```
-    virtualenv venv
-    ```
 
-    ```
+    pip install virtualenv
+    python -m venv venv
+    virtualenv venv
     venv/Scripts/activate
-    ```
-  
-    
-    
 
 # Go inside the project folder
 
-    cd Everest 
+    cd  untill you see manage.py file 
 
 # Install the necessary modules
-```
-pip install -r requirements.txt
 
-```
-    
+    pip install -r requirements.txt
+
 **If it shows error, run**
 
-```
- pip install django
-
-```
-   
+    pip install django
 
 # Run the application
 
@@ -62,10 +41,8 @@ pip install -r requirements.txt
      http://127.0.0.1:8000/
 
 
-
-
-
-
 # You can also create a new super user with the following command and login with those credentials.
-
+    python manage.py makemigration
+    python manage.py migrate
     python manage.py createsuperuser
+    
